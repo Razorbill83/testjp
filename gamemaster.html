@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maître du jeu – Jeu de Piste</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --forest:  #0f1f0f;
+    --moss:    #1a2e1a;
+    --canopy:  #243d1a;
+    --leaf:    #3d6b22;
+    --lime:    #7cb835;
+    --lime-lt: #a8d460;
+    --sand:    #f0ebe0;
+    --bark:    #4a3010;
+    --amber:   #d4832a;
+    --danger:  #c0392b;
+    --sidebar: 360px;
+    --header:  56px;
+    --toggle-w: 28px;
+  }
+  html, body { height:100%; font-family:'Segoe UI',system-ui,sans-serif; background:var(--forest); color:var(--sand); overflow:hidden; }
+
+  /* ── HEADER ── */
+  #header {
+    position:fixed; top:0; left:0; right:0; height:var(--header);
+    background:var(--moss); border-bottom:1px solid rgba(125,184,53,.2);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 1.2rem; z-index:1000; box-shadow:0 2px 12px rgba(0,0,0,.4);
+  }
+  .header-left { display:flex; align-items:center; gap:1rem; }
+  .logo-mark {
+    background:linear-gradient(135deg,var(--leaf),var(--lime));
+    color:var(--forest); font-weight:900; font-size:.75rem;
+    letter-spacing:.08em; padding:.3rem .7rem; border-radius:6px; text-transform:uppercase;
+  }
+  .app-title { font-size:1.05rem; font-weight:700; color:var(--sand); }
+  .app-title span { color:var(--lime); }
+  .header-controls { display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; }
+  .session-selector {
+    display:flex; align-items:center; gap:.6rem;
+    background:var(--canopy); border:1px solid rgba(125,184,53,.25);
+    border-radius:8px; padding:.4rem .8rem; font-size:.82rem;
+  }
+  .session-selector label { color:rgba(240,235,224,.5); font-size:.75rem; }
+  .session-selector input {
+    background:transparent; border:none; color:var(--lime);
+    font-size:.9rem; font-weight:700; width:90px; outline:none;
+    font-family:'Courier New',monospace;
+  }
+  .btn-icon {
+    background:var(--canopy); border:1px solid rgba(125,184,53,.2);
+    border-radius:8px; color:var(--sand); cursor:pointer; font-size:.8rem;
+    padding:.45rem .9rem; display:flex; align-items:center; gap:.5rem;
+    transition:background .15s,border-color .15s; white-space:nowrap;
+  }
+  .btn-icon:hover { background:var(--leaf); border-color:var(--lime); }
+  .btn-icon.danger { border-color:rgba(192,57,43,.3); }
+  .btn-icon.danger:hover { background:rgba(192,57,43,.3); border-color:var(--danger); color:#ff9999; }
+  .btn-icon:disabled { opacity:.45; cursor:not-allowed; pointer-events:none; }
+
+  /* ── LAYOUT ── */
+  #layout {
+    position:fixed; top:var(--header); left:0; right:0; bottom:0;
+    display:flex; overflow:hidden;
+  }
+
+  /* ── MAP ── */
+  #map-container { flex:1; position:relative; overflow:hidden; min-width:0; }
+  #map { width:100%; height:100%; }
+  .leaflet-container { background:#1a2a1a; }
+
+  .team-marker-label {
+    position:absolute; top:-26px; left:50%; transform:translateX(-50%);
+    background:rgba(15,31,15,.9); color:var(--lime);
+    font-size:.68rem; font-weight:700; padding:.2rem .5rem;
+    border-radius:4px; white-space:nowrap;
+    border:1px solid rgba(125,184,53,.3); backdrop-filter:blur(4px);
+  }
+  .team-marker-pin {
+    width:36px; height:36px; border-radius:50% 50% 50% 0;
+    transform:rotate(-45deg); display:flex; align-items:center; justify-content:center;
+    border:2px solid rgba(255,255,255,.6); box-shadow:0 4px 12px rgba(0,0,0,.4); font-size:1rem;
+  }
+  .team-marker-pin span { transform:rotate(45deg); }
+
+  .map-overlay {
+    position:absolute; top:1rem; left:1rem; z-index:500;
+    display:flex; flex-direction:column; gap:.5rem; pointer-events:none;
+  }
+  .map-pill {
+    background:rgba(15,31,15,.85); border:1px solid rgba(125,184,53,.2);
+    backdrop-filter:blur(8px); border-radius:8px; padding:.4rem .8rem;
+    font-size:.78rem; display:flex; align-items:center; gap:.5rem; pointer-events:all;
+  }
+  .live-dot { width:8px; height:8px; border-radius:50%; background:var(--lime); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* ── TOGGLE BUTTON — attaché au bord droit du map-container ── */
+  #toggle-sidebar {
+    position:absolute;
+    right:0; top:50%; transform:translateY(-50%);
+    z-index:600;
+    background:var(--moss);
+    border:1px solid rgba(125,184,53,.25);
+    border-right:none;
+    border-radius:8px 0 0 8px;
+    color:var(--lime);
+    cursor:pointer;
+    width:var(--toggle-w);
+    padding:.9rem .3rem;
+    font-size:.75rem;
+    line-height:1;
+    transition:background .15s;
+    display:flex; align-items:center; justify-content:center;
+  }
+  #toggle-sidebar:hover { background:var(--canopy); }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width:var(--sidebar); flex-shrink:0;
+    background:var(--moss); border-left:1px solid rgba(125,184,53,.15);
+    display:flex; flex-direction:column;
+    transition:width .25s ease; overflow:hidden;
+  }
+  #sidebar.collapsed { width:0; border-left:none; }
+
+  .sidebar-header {
+    padding:.8rem 1rem; border-bottom:1px solid rgba(125,184,53,.12);
+    display:flex; align-items:center; justify-content:space-between;
+    flex-shrink:0; background:var(--canopy);
+  }
+  .sidebar-title {
+    font-size:.8rem; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--lime);
+    display:flex; align-items:center; gap:.5rem;
+  }
+  .unread-badge {
+    background:var(--amber); color:var(--forest);
+    font-size:.65rem; font-weight:800; padding:.1rem .45rem;
+    border-radius:10px; min-width:18px; text-align:center; display:none;
+  }
+  .unread-badge.visible { display:inline-block; }
+  .btn-collapse { background:none; border:none; color:rgba(240,235,224,.4); cursor:pointer; font-size:1.1rem; transition:color .15s; padding:.2rem; }
+  .btn-collapse:hover { color:var(--lime); }
+
+  .teams-scroll { flex:1; overflow-y:auto; overflow-x:hidden; scrollbar-width:thin; scrollbar-color:rgba(125,184,53,.2) transparent; }
+
+  .team-group { border-bottom:1px solid rgba(125,184,53,.08); }
+  .team-group-header {
+    display:flex; align-items:center; gap:.7rem; padding:.75rem 1rem;
+    cursor:pointer; user-select:none; transition:background .15s;
+    position:sticky; top:0; background:var(--moss); z-index:2;
+  }
+  .team-group-header:hover { background:rgba(61,107,34,.2); }
+  .team-color-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .team-group-name { flex:1; font-size:.85rem; font-weight:700; color:var(--sand); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .team-group-meta { font-size:.68rem; color:rgba(240,235,224,.35); display:flex; align-items:center; gap:.4rem; }
+  .team-unread { background:var(--amber); color:var(--forest); font-size:.62rem; font-weight:800; padding:.1rem .4rem; border-radius:8px; display:none; }
+  .team-unread.visible { display:inline-block; }
+  .chevron { font-size:.6rem; color:rgba(240,235,224,.3); transition:transform .2s; }
+  .chevron.open { transform:rotate(90deg); }
+
+  .team-messages { display:none; flex-direction:column; padding:.5rem 1rem .8rem; gap:.5rem; background:rgba(0,0,0,.15); }
+  .team-messages.open { display:flex; }
+
+  .chat-msg { font-size:.82rem; line-height:1.45; padding:.5rem .7rem; border-radius:10px; word-break:break-word; }
+  .chat-msg.from-team { background:rgba(61,107,34,.18); border:1px solid rgba(125,184,53,.15); border-bottom-left-radius:3px; align-self:flex-start; max-width:90%; }
+  .chat-msg.from-master { background:rgba(212,131,42,.15); border:1px solid rgba(212,131,42,.2); border-bottom-right-radius:3px; align-self:flex-end; max-width:90%; text-align:right; }
+  .chat-msg-time { font-size:.62rem; color:rgba(240,235,224,.3); margin-top:.25rem; }
+  .chat-msg.from-master .chat-msg-time { text-align:right; }
+
+  .reply-area { display:flex; gap:.5rem; margin-top:.4rem; padding:0 0 .3rem; }
+  .reply-input { flex:1; background:var(--forest); border:1px solid rgba(125,184,53,.2); border-radius:8px; padding:.45rem .7rem; color:var(--sand); font-size:.8rem; outline:none; transition:border-color .15s; font-family:inherit; }
+  .reply-input:focus { border-color:var(--lime); }
+  .reply-input::placeholder { color:rgba(240,235,224,.25); }
+  .btn-reply { background:var(--leaf); border:none; border-radius:8px; color:var(--sand); font-size:.8rem; padding:.45rem .7rem; cursor:pointer; transition:background .15s; flex-shrink:0; }
+  .btn-reply:hover { background:var(--lime-lt); color:var(--forest); }
+
+  .broadcast-bar { border-top:1px solid rgba(125,184,53,.12); padding:.8rem 1rem; flex-shrink:0; background:var(--canopy); }
+  .broadcast-label { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--amber); margin-bottom:.5rem; }
+  .broadcast-row { display:flex; gap:.5rem; }
+  .broadcast-input { flex:1; background:var(--forest); border:1px solid rgba(212,131,42,.25); border-radius:8px; padding:.5rem .8rem; color:var(--sand); font-size:.82rem; outline:none; transition:border-color .15s; font-family:inherit; }
+  .broadcast-input:focus { border-color:var(--amber); }
+  .broadcast-input::placeholder { color:rgba(240,235,224,.25); }
+  .btn-broadcast { background:linear-gradient(135deg,var(--bark),var(--amber)); border:none; border-radius:8px; color:var(--sand); font-size:.8rem; font-weight:700; padding:.5rem .9rem; cursor:pointer; transition:opacity .15s; white-space:nowrap; }
+  .btn-broadcast:hover { opacity:.85; }
+
+  /* ── NO TEAMS ── */
+  .no-teams { padding:2rem 1rem; text-align:center; color:rgba(240,235,224,.25); font-size:.82rem; line-height:1.6; }
+  .no-teams-icon { font-size:2.5rem; display:block; margin-bottom:.8rem; }
+
+  /* ── MODAL ── */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:2000; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--moss); border:1px solid rgba(125,184,53,.2); border-radius:16px; padding:2rem; max-width:340px; width:90%; text-align:center; box-shadow:0 16px 48px rgba(0,0,0,.6); }
+  .modal h2 { font-size:1.1rem; font-weight:700; color:var(--lime); margin-bottom:.5rem; }
+  .modal p { font-size:.82rem; color:rgba(240,235,224,.5); margin-bottom:1.2rem; line-height:1.5; }
+  #qr-code { background:white; border-radius:10px; padding:1rem; display:inline-block; margin-bottom:1rem; }
+  .qr-url { font-size:.72rem; color:rgba(240,235,224,.35); word-break:break-all; margin-bottom:1rem; font-family:'Courier New',monospace; }
+  .modal-close { background:var(--canopy); border:1px solid rgba(125,184,53,.2); border-radius:8px; color:var(--sand); padding:.6rem 1.2rem; cursor:pointer; font-size:.85rem; transition:background .15s; }
+  .modal-close:hover { background:var(--leaf); }
+
+  /* ── CONFIRM DIALOG ── */
+  .confirm-box { background:var(--moss); border:1px solid rgba(192,57,43,.3); border-radius:16px; padding:2rem; max-width:380px; width:90%; box-shadow:0 16px 48px rgba(0,0,0,.6); }
+  .confirm-box h2 { font-size:1.1rem; font-weight:700; color:#ff7070; margin-bottom:.8rem; }
+  .confirm-box p { font-size:.85rem; color:rgba(240,235,224,.65); line-height:1.6; margin-bottom:1.4rem; }
+  .confirm-actions { display:flex; gap:.8rem; justify-content:flex-end; }
+  .btn-cancel { background:var(--canopy); border:1px solid rgba(125,184,53,.2); border-radius:8px; color:var(--sand); padding:.55rem 1.1rem; cursor:pointer; font-size:.85rem; }
+  .btn-confirm-danger { background:linear-gradient(135deg,#8b1c1c,var(--danger)); border:none; border-radius:8px; color:white; font-weight:700; padding:.55rem 1.1rem; cursor:pointer; font-size:.85rem; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div class="header-left">
+    <div class="logo-mark">🧭 GM</div>
+    <div class="app-title">Jeu de Piste — <span>Maître du jeu</span></div>
+  </div>
+  <div class="header-controls">
+    <div class="session-selector">
+      <label>Session :</label>
+      <input type="text" id="session-id" value="demo" maxlength="20" placeholder="demo">
+    </div>
+    <button class="btn-icon" onclick="showQR()">📱 QR Code</button>
+    <button class="btn-icon danger" id="btn-close-session" onclick="askCloseSession()">🏁 Clore la session</button>
+  </div>
+</div>
+
+<div id="layout">
+  <!-- MAP -->
+  <div id="map-container">
+    <div id="map"></div>
+    <div class="map-overlay">
+      <div class="map-pill">
+        <div class="live-dot"></div>
+        <span id="team-count-label">Aucune équipe connectée</span>
+      </div>
+    </div>
+    <!-- Bouton toggle : dans map-container, collé à son bord droit -->
+    <button id="toggle-sidebar" onclick="toggleSidebar()" title="Afficher/masquer les messages">◀</button>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">
+        💬 Messages
+        <span class="unread-badge" id="global-unread">0</span>
+      </div>
+      <button class="btn-collapse" onclick="toggleSidebar()">✕</button>
+    </div>
+    <div class="teams-scroll" id="teams-scroll">
+      <div class="no-teams" id="no-teams-msg">
+        <span class="no-teams-icon">🗺️</span>
+        En attente des équipes...<br>Partagez le QR code pour commencer.
+      </div>
+    </div>
+    <div class="broadcast-bar">
+      <div class="broadcast-label">📢 Diffuser à tous</div>
+      <div class="broadcast-row">
+        <input type="text" class="broadcast-input" id="broadcast-input" placeholder="Message pour toutes les équipes…" maxlength="300"
+          onkeydown="if(event.key==='Enter') broadcastMessage()">
+        <button class="btn-broadcast" onclick="broadcastMessage()">Envoyer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QR MODAL -->
+<div class="modal-overlay" id="qr-modal">
+  <div class="modal">
+    <h2>QR Code de la session</h2>
+    <p>Faites flasher ce code par les équipes pour rejoindre la partie</p>
+    <div id="qr-code"></div>
+    <div class="qr-url" id="qr-url-text"></div>
+    <button class="modal-close" onclick="closeModal('qr-modal')">Fermer</button>
+  </div>
+</div>
+
+<!-- CONFIRM CLOSE MODAL -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="confirm-box">
+    <h2>🏁 Clore la session ?</h2>
+    <p>Cette action va :<br>
+      • Notifier toutes les équipes que la partie est terminée<br>
+      • <strong>Effacer définitivement</strong> toutes les équipes, positions et messages de la session
+    </p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="closeModal('confirm-modal')">Annuler</button>
+      <button class="btn-confirm-danger" onclick="confirmCloseSession()">Oui, clore et effacer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// CONFIG — Remplacez par votre URL Firebase
+// ══════════════════════════════════════════════
+const FIREBASE_URL = 'https://yggdraskills-tt1906-default-rtdb.europe-west1.firebasedatabase.app/'; // ← MODIFIEZ ICI
+
+const TEAM_COLORS = ['#7cb835','#e8a84a','#e74c3c','#3498db','#9b59b6','#1abc9c','#e67e22','#f39c12'];
+
+let sessionId = 'demo';
+let teams = {};
+let allMessages = {};
+let totalUnread = 0;
+let sidebarOpen = true;
+let pollingInterval = null;
+
+// ── MAP ──
+const map = L.map('map', { center:[46.8,2.3], zoom:6, zoomControl:true });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom:19,
+}).addTo(map);
+
+// ── SESSION INPUT ──
+document.getElementById('session-id').addEventListener('change', function() {
+  sessionId = this.value.trim() || 'demo';
+  resetAll();
+});
+
+sessionId = document.getElementById('session-id').value.trim();
+
+// ── POLLING ──
+function startPolling() {
+  if (pollingInterval) clearInterval(pollingInterval);
+  pollAll();
+  pollingInterval = setInterval(pollAll, 3000);
+}
+
+async function pollAll() {
+  try {
+    const data = await fbGet(`sessions/${sessionId}`);
+    if (!data) return;
+
+    if (data.teams) {
+      Object.entries(data.teams).forEach(([key, team]) => {
+        ensureTeam(key, team.name);
+        if (team.position) updateTeamPosition(key, team.position);
+      });
+    }
+
+    if (data.messages) {
+      const msgs = Object.entries(data.messages)
+        .map(([id, m]) => ({ id, ...m }))
+        .filter(m => !allMessages[m.id]);
+      msgs.forEach(m => {
+        allMessages[m.id] = m;
+        if (m.from === 'team' && teams[m.team]) appendTeamMessage(m.team, m);
+      });
+    }
+
+    updateTeamCount();
+  } catch(e) {}
+}
+
+// ── TEAMS ──
+function ensureTeam(key, name) {
+  if (teams[key]) return;
+  const color = TEAM_COLORS[Object.keys(teams).length % TEAM_COLORS.length];
+  teams[key] = { name: name || key, color, messages:[], unread:0, open:true };
+  createTeamGroup(key);
+}
+
+function updateTeamPosition(key, pos) {
+  if (!teams[key]) return;
+  const t = teams[key];
+  const latlng = [pos.lat, pos.lng];
+  if (!t.marker) {
+    const icon = L.divIcon({
+      className:'',
+      html:`<div style="position:relative;width:36px;height:46px;">
+        <div class="team-marker-label">${escHtml(t.name)}</div>
+        <div class="team-marker-pin" style="background:${t.color}"><span>🏃</span></div>
+      </div>`,
+      iconSize:[36,46], iconAnchor:[18,46],
+    });
+    t.marker = L.marker(latlng, { icon }).addTo(map);
+    t.marker.bindPopup(`<b>${t.name}</b><br>±${pos.acc}m – ${fmtTime(pos.t)}`);
+    t.circleMarker = L.circle(latlng, { radius:pos.acc||20, color:t.color, fillColor:t.color, fillOpacity:.08, weight:1 }).addTo(map);
+    if (Object.values(teams).filter(x=>x.marker).length === 1) map.setView(latlng, 14);
+  } else {
+    t.marker.setLatLng(latlng);
+    t.marker.setPopupContent(`<b>${t.name}</b><br>±${pos.acc}m – ${fmtTime(pos.t)}`);
+    t.circleMarker.setLatLng(latlng);
+    t.circleMarker.setRadius(pos.acc||20);
+  }
+}
+
+function updateTeamCount() {
+  const n = Object.keys(teams).length;
+  document.getElementById('team-count-label').textContent =
+    n===0 ? 'Aucune équipe connectée' : n===1 ? '1 équipe connectée' : `${n} équipes connectées`;
+  document.getElementById('no-teams-msg').style.display = n===0 ? 'block' : 'none';
+}
+
+// ── SIDEBAR GROUPS ──
+function createTeamGroup(key) {
+  const t = teams[key];
+  const scroll = document.getElementById('teams-scroll');
+  const group = document.createElement('div');
+  group.className = 'team-group';
+  group.id = `group-${key}`;
+  group.innerHTML = `
+    <div class="team-group-header" onclick="toggleGroup('${key}')">
+      <div class="team-color-dot" style="background:${t.color}"></div>
+      <div class="team-group-name">${escHtml(t.name)}</div>
+      <div class="team-group-meta">
+        <span class="team-unread" id="unread-${key}"></span>
+        <span class="chevron open" id="chevron-${key}">▶</span>
+      </div>
+    </div>
+    <div class="team-messages open" id="messages-${key}">
+      <div class="reply-area">
+        <input type="text" class="reply-input" id="reply-${key}" placeholder="Répondre à ${escHtml(t.name)}…" maxlength="300"
+          onkeydown="if(event.key==='Enter'){sendToTeam('${key}');event.preventDefault();}">
+        <button class="btn-reply" onclick="sendToTeam('${key}')">↑</button>
+      </div>
+    </div>`;
+  scroll.appendChild(group);
+}
+
+function toggleGroup(key) {
+  teams[key].open = !teams[key].open;
+  document.getElementById(`messages-${key}`).classList.toggle('open', teams[key].open);
+  document.getElementById(`chevron-${key}`).classList.toggle('open', teams[key].open);
+  if (teams[key].open) {
+    teams[key].unread = 0;
+    const b = document.getElementById(`unread-${key}`);
+    b.textContent=''; b.classList.remove('visible');
+    recalcGlobalUnread();
+  }
+}
+
+function appendTeamMessage(key, msg) {
+  const container = document.getElementById(`messages-${key}`);
+  if (!container) return;
+  if (container.querySelector(`[data-id="${msg.id}"]`)) return;
+  const isMaster = msg.from === 'master';
+  const div = document.createElement('div');
+  div.className = `chat-msg ${isMaster ? 'from-master' : 'from-team'}`;
+  div.dataset.id = msg.id;
+  div.innerHTML = `${escHtml(msg.text)}<div class="chat-msg-time">${fmtTime(msg.t)}</div>`;
+  container.insertBefore(div, container.querySelector('.reply-area'));
+  if (!teams[key].open && !isMaster) {
+    teams[key].unread++;
+    const b = document.getElementById(`unread-${key}`);
+    b.textContent = teams[key].unread; b.classList.add('visible');
+    recalcGlobalUnread();
+  }
+}
+
+function recalcGlobalUnread() {
+  totalUnread = Object.values(teams).reduce((s,t)=>s+t.unread,0);
+  const b = document.getElementById('global-unread');
+  b.textContent = totalUnread; b.classList.toggle('visible', totalUnread>0);
+}
+
+// ── SEND ──
+async function sendToTeam(key) {
+  const input = document.getElementById(`reply-${key}`);
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  const msg = { from:'master', to:key, text, t:Date.now() };
+  await fbPush(`sessions/${sessionId}/messages`, msg);
+  const fakeId = 'local_'+Date.now();
+  allMessages[fakeId]=true;
+  appendTeamMessage(key, { id:fakeId, ...msg });
+}
+
+async function broadcastMessage() {
+  const input = document.getElementById('broadcast-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  const msg = { from:'master', to:null, text, t:Date.now() };
+  await fbPush(`sessions/${sessionId}/messages`, msg);
+  Object.keys(teams).forEach(key => {
+    const fakeId = 'bc_'+key+'_'+Date.now();
+    allMessages[fakeId]=true;
+    appendTeamMessage(key, { id:fakeId, ...msg });
+  });
+}
+
+// ── CLOSE SESSION ──
+function askCloseSession() {
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+async function confirmCloseSession() {
+  closeModal('confirm-modal');
+  // 1. Marquer la session comme fermée (les joueurs voient l'écran de fin)
+  await fbSet(`sessions/${sessionId}/open`, false);
+  // Courte pause pour que les joueurs puissent détecter la fermeture
+  await new Promise(r => setTimeout(r, 2000));
+  // 2. Effacer toutes les données de la session
+  await fbDelete(`sessions/${sessionId}`);
+  // 3. Réinitialiser l'interface
+  resetAll();
+  const btn = document.getElementById('btn-close-session');
+  btn.textContent = '✅ Session clôturée';
+  btn.disabled = true;
+  setTimeout(() => { btn.textContent = '🏁 Clore la session'; btn.disabled = false; }, 5000);
+}
+
+// ── QR CODE ──
+function showQR() {
+  const sid = sessionId || 'demo';
+  const url = `${window.location.origin}${window.location.pathname.replace('gamemaster.html','player.html')}?s=${encodeURIComponent(sid)}`;
+  document.getElementById('qr-url-text').textContent = url;
+  const qrDiv = document.getElementById('qr-code');
+  qrDiv.innerHTML = '';
+  const img = document.createElement('img');
+  img.width = 200; img.height = 200; img.alt = 'QR Code'; img.style.display='block';
+  img.src = `https://quickchart.io/qr?text=${encodeURIComponent(url)}&size=200&margin=2&ecLevel=M`;
+  img.onerror = () => {
+    qrDiv.innerHTML = `<div style="font-size:.75rem;color:#555;padding:1rem;text-align:center">
+      QR indisponible hors-ligne.<br>
+      <a href="${url}" target="_blank" style="color:#7cb835;word-break:break-all">${url}</a>
+    </div>`;
+  };
+  qrDiv.appendChild(img);
+  document.getElementById('qr-modal').classList.add('open');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
+});
+
+// ── TOGGLE SIDEBAR ──
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('collapsed', !sidebarOpen);
+  document.getElementById('toggle-sidebar').textContent = sidebarOpen ? '◀' : '▶';
+  // Laisser Leaflet recalculer sa taille
+  setTimeout(() => map.invalidateSize(), 260);
+}
+
+// ── RESET ──
+function resetAll() {
+  if (pollingInterval) clearInterval(pollingInterval);
+  Object.values(teams).forEach(t => {
+    if (t.marker) map.removeLayer(t.marker);
+    if (t.circleMarker) map.removeLayer(t.circleMarker);
+  });
+  teams = {}; allMessages = {}; totalUnread = 0;
+  document.getElementById('teams-scroll').innerHTML = `
+    <div class="no-teams" id="no-teams-msg">
+      <span class="no-teams-icon">🗺️</span>
+      En attente des équipes...<br>Partagez le QR code pour commencer.
+    </div>`;
+  document.getElementById('global-unread').classList.remove('visible');
+  updateTeamCount();
+  startPolling();
+}
+
+// ── FIREBASE ──
+const FB = p => `${FIREBASE_URL}/${p}.json`;
+async function fbGet(p) { const r=await fetch(FB(p)); if(!r.ok) throw new Error(r.status); return r.json(); }
+async function fbSet(p,v) { await fetch(FB(p),{method:'PUT',body:JSON.stringify(v)}); }
+async function fbPush(p,v) { await fetch(FB(p),{method:'POST',body:JSON.stringify(v)}); }
+async function fbDelete(p) { await fetch(FB(p),{method:'DELETE'}); }
+
+// ── UTILS ──
+function escHtml(t) { if(!t) return ''; return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+function fmtTime(ts) { return new Date(ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }
+
+startPolling();
+</script>
+</body>
+</html>
