@@ -505,11 +505,13 @@ async function confirmCloseSession() {
   btn.disabled = true;
 
   try {
-    // 2. Écrire open:false — les joueurs détectent la fin à leur prochain poll (10 s)
+    // 2a. Écrire le flag de fermeture dans un nœud SÉPARÉ (survit à la suppression)
+    await fbSet(`closed/${sessionId}`, true);
+    // 2b. Écrire aussi open:false dans la session (double sécurité)
     await fbSet(`sessions/${sessionId}/open`, false);
-    // 3. Attendre 3 s pour laisser les joueurs lire le flag
-    await new Promise(r => setTimeout(r, 3000));
-    // 4. Supprimer toute la session d'un coup
+    // 3. Attendre 8 s — les joueurs vérifient toutes les 3-4 s, donc au moins 2 cycles
+    await new Promise(r => setTimeout(r, 8000));
+    // 4. Supprimer la session (le flag closed/${sessionId} reste)
     await fbDelete(`sessions/${sessionId}`);
   } catch(e) {
     console.warn('Erreur Firebase lors de la clôture :', e);

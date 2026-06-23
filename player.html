@@ -522,12 +522,16 @@ function startPolling() {
   if (polling) clearInterval(polling);
   pollMessages();
   polling = setInterval(pollMessages, 3000);
-  setInterval(checkSession, 10000);
+  setInterval(checkSession,  4000);
 }
 
 async function pollMessages() {
   try {
-    const data = await fbGet(`sessions/${sessionId}/messages`);
+    // Vérification rapide de fermeture intégrée au poll principal
+    const session = await fbGet(`sessions/${sessionId}`);
+    if (session === null) { clearSavedSession(); showClosed(); return; }
+    if (session && session.open === false) { clearSavedSession(); showClosed(); return; }
+    const data = session ? session.messages : null;
     if (!data) return;
     const myKey = encodeTeam(teamName);
     const msgs = Object.entries(data)
@@ -544,8 +548,15 @@ async function pollMessages() {
 
 async function checkSession() {
   try {
-    const open = await fbGet(`sessions/${sessionId}/open`);
-    if (open === false) { clearSavedSession(); showClosed(); }
+    // Vérifier d'abord le flag de fermeture dédié (survit à la suppression de la session)
+    const closed = await fbGet(`closed/${sessionId}`);
+    if (closed === true) { clearSavedSession(); showClosed(); return; }
+  } catch(e) {}
+  try {
+    // Fallback : si le nœud session n'existe plus (null) ou open===false → terminée
+    const data = await fbGet(`sessions/${sessionId}`);
+    if (data === null) { clearSavedSession(); showClosed(); return; }
+    if (data && data.open === false) { clearSavedSession(); showClosed(); }
   } catch(e) {}
 }
 
