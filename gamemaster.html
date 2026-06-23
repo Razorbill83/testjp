@@ -242,7 +242,7 @@
       </div>
     </div>
     <!-- Bouton toggle : dans map-container, collé à son bord droit -->
-    <button id="toggle-sidebar" onclick="toggleSidebar()" title="Afficher/masquer les messages">◀</button>
+    <button id="toggle-sidebar" onclick="toggleSidebar()" title="Afficher/masquer les messages">▶</button>
   </div>
 
   <!-- SIDEBAR -->
@@ -496,18 +496,41 @@ function askCloseSession() {
 
 async function confirmCloseSession() {
   closeModal('confirm-modal');
-  // 1. Marquer la session comme fermée (les joueurs voient l'écran de fin)
-  await fbSet(`sessions/${sessionId}/open`, false);
-  // Courte pause pour que les joueurs puissent détecter la fermeture
-  await new Promise(r => setTimeout(r, 2000));
-  // 2. Effacer toutes les données de la session
-  await fbDelete(`sessions/${sessionId}`);
-  // 3. Réinitialiser l'interface
-  resetAll();
+
+  // 1. Stopper le polling immédiatement pour ne pas réécrire en Firebase
+  if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+
   const btn = document.getElementById('btn-close-session');
-  btn.textContent = '✅ Session clôturée';
+  btn.textContent = '⏳ Clôture…';
   btn.disabled = true;
-  setTimeout(() => { btn.textContent = '🏁 Clore la session'; btn.disabled = false; }, 5000);
+
+  try {
+    // 2. Écrire open:false — les joueurs détectent la fin à leur prochain poll (10 s)
+    await fbSet(`sessions/${sessionId}/open`, false);
+    // 3. Attendre 3 s pour laisser les joueurs lire le flag
+    await new Promise(r => setTimeout(r, 3000));
+    // 4. Supprimer toute la session d'un coup
+    await fbDelete(`sessions/${sessionId}`);
+  } catch(e) {
+    console.warn('Erreur Firebase lors de la clôture :', e);
+  }
+
+  // 5. Nettoyer l'interface locale (pas de resetAll qui relancerait le polling)
+  Object.values(teams).forEach(t => {
+    if (t.marker)       map.removeLayer(t.marker);
+    if (t.circleMarker) map.removeLayer(t.circleMarker);
+  });
+  teams = {}; allMessages = {}; totalUnread = 0;
+  document.getElementById('teams-scroll').innerHTML = `
+    <div class="no-teams" id="no-teams-msg">
+      <span class="no-teams-icon">🏁</span>
+      Session clôturée.<br>Changez l'ID de session pour relancer une partie.
+    </div>`;
+  document.getElementById('global-unread').classList.remove('visible');
+  updateTeamCount();
+
+  btn.textContent = '✅ Clôturée';
+  setTimeout(() => { btn.textContent = '🏁 Clore la session'; btn.disabled = false; }, 8000);
 }
 
 // ── QR CODE ──
@@ -539,7 +562,7 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
 function toggleSidebar() {
   sidebarOpen = !sidebarOpen;
   document.getElementById('sidebar').classList.toggle('collapsed', !sidebarOpen);
-  document.getElementById('toggle-sidebar').textContent = sidebarOpen ? '◀' : '▶';
+  document.getElementById('toggle-sidebar').textContent = sidebarOpen ? '▶' : '◀';
   // Laisser Leaflet recalculer sa taille
   setTimeout(() => map.invalidateSize(), 260);
 }

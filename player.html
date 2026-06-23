@@ -7,331 +7,187 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 :root {
-  --forest: #1a2e1a;
-  --moss:   #2d4a1e;
-  --leaf:   #4a7c2f;
-  --lime:   #8bc34a;
-  --sand:   #f5f0e8;
-  --bark:   #5c3d1e;
-  --amber:  #d4832a;
-  --danger: #c0392b;
-  /* bulles */
-  --bubble-out-bg:    #3a6b25;
-  --bubble-out-bdr:   rgba(139,195,74,.35);
-  --bubble-out-text:  #e8f5d0;
-  --bubble-in-bg:     #3a2e10;
-  --bubble-in-bdr:    rgba(212,131,42,.35);
-  --bubble-in-text:   #f5e8d0;
+  --forest:#1a2e1a; --moss:#2d4a1e; --leaf:#4a7c2f; --lime:#8bc34a;
+  --sand:#f5f0e8; --bark:#5c3d1e; --amber:#d4832a; --danger:#c0392b;
+  --bubble-out-bg:#2a5a18; --bubble-out-bdr:rgba(139,195,74,.4); --bubble-out-text:#dff0c0;
+  --bubble-in-bg:#3d2a08;  --bubble-in-bdr:rgba(212,131,42,.4);  --bubble-in-text:#f5e8cc;
 }
-html, body { height:100%; background:var(--forest); font-family:'Segoe UI',system-ui,sans-serif; color:var(--sand); overflow-x:hidden; }
+html,body { height:100%; background:var(--forest); font-family:'Segoe UI',system-ui,sans-serif; color:var(--sand); overflow-x:hidden; }
 
-/* ═══════ MENU FLOTTANT ═══════ */
-#fab-menu {
-  position: fixed;
-  top: 12px; right: 12px;
-  z-index: 8000;
-}
+/* ════ FAB MENU ════ */
+#fab-menu { position:fixed; top:12px; right:12px; z-index:8000; }
 .fab-btn {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  background: var(--moss);
-  border: 1px solid rgba(139,195,74,.3);
-  color: var(--lime);
-  font-size: 1.3rem;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,.35);
-  transition: background .15s;
-  -webkit-tap-highlight-color: transparent;
+  width:40px; height:40px; border-radius:50%;
+  background:var(--moss); border:1px solid rgba(139,195,74,.3);
+  color:var(--lime); font-size:1.3rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.4); transition:background .15s;
+  -webkit-tap-highlight-color:transparent;
 }
-.fab-btn:hover { background: var(--leaf); }
-
+.fab-btn:hover { background:var(--leaf); }
 .fab-dropdown {
-  position: absolute;
-  top: 48px; right: 0;
-  background: var(--moss);
-  border: 1px solid rgba(139,195,74,.2);
-  border-radius: 12px;
-  min-width: 200px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.45);
-  overflow: hidden;
-  display: none;
-  flex-direction: column;
+  position:absolute; top:48px; right:0;
+  background:var(--moss); border:1px solid rgba(139,195,74,.2);
+  border-radius:12px; min-width:200px;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+  overflow:hidden; display:none; flex-direction:column;
 }
-.fab-dropdown.open { display: flex; }
-
-.fab-section-label {
-  font-size: .65rem;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: rgba(245,240,232,.3);
-  padding: .6rem 1rem .3rem;
-}
-
+.fab-dropdown.open { display:flex; }
+.fab-section-label { font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(245,240,232,.3); padding:.6rem 1rem .3rem; }
 .fab-item {
-  display: flex; align-items: center; gap: .7rem;
-  padding: .75rem 1rem;
-  cursor: pointer;
-  font-size: .88rem;
-  color: var(--sand);
-  border: none;
-  background: none;
-  text-align: left;
-  width: 100%;
-  transition: background .15s;
-  -webkit-tap-highlight-color: transparent;
+  display:flex; align-items:center; gap:.7rem;
+  padding:.75rem 1rem; cursor:pointer; font-size:.88rem; color:var(--sand);
+  border:none; background:none; text-align:left; width:100%;
+  transition:background .15s; -webkit-tap-highlight-color:transparent;
 }
-.fab-item:hover { background: rgba(139,195,74,.12); }
-.fab-item .fab-icon { font-size: 1rem; width: 20px; text-align: center; }
-.fab-item.active { color: var(--lime); }
-.fab-item.active .fab-icon::after { content: ' ✓'; font-size: .7rem; }
+.fab-item:hover { background:rgba(139,195,74,.12); }
+.fab-icon { font-size:1rem; width:20px; text-align:center; }
+.fab-item.active { color:var(--lime); font-weight:600; }
+.fab-divider { border:none; border-top:1px solid rgba(139,195,74,.1); margin:.2rem 0; }
 
-.fab-divider { border: none; border-top: 1px solid rgba(139,195,74,.1); margin: .2rem 0; }
-
-/* ═══════ LANG SCREEN ═══════ */
-#lang-screen {
-  min-height: 100vh; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 2rem; padding: 2rem;
-}
-.lang-icon { font-size: 3.5rem; filter: drop-shadow(0 4px 12px rgba(139,195,74,.4)); }
-.lang-title { font-size: 1.6rem; font-weight: 800; color: var(--lime); text-align: center; }
-.lang-sub   { font-size: .9rem; color: rgba(245,240,232,.5); text-align: center; }
-.lang-buttons { display: flex; gap: 1rem; }
+/* ════ LANG SCREEN ════ */
+#lang-screen { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem; padding:2rem; }
+.lang-icon  { font-size:3.5rem; filter:drop-shadow(0 4px 12px rgba(139,195,74,.4)); }
+.lang-title { font-size:1.6rem; font-weight:800; color:var(--lime); text-align:center; }
+.lang-sub   { font-size:.9rem; color:rgba(245,240,232,.5); text-align:center; }
+.lang-buttons { display:flex; gap:1rem; }
 .btn-lang {
-  background: var(--moss); border: 2px solid rgba(139,195,74,.3);
-  border-radius: 14px; padding: 1rem 2rem; cursor: pointer;
-  display: flex; flex-direction: column; align-items: center; gap: .4rem;
-  transition: border-color .2s, background .2s; -webkit-tap-highlight-color: transparent;
+  background:var(--moss); border:2px solid rgba(139,195,74,.3);
+  border-radius:14px; padding:1rem 2rem; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:.4rem;
+  transition:border-color .2s, background .2s; -webkit-tap-highlight-color:transparent;
 }
-.btn-lang:hover, .btn-lang:active { border-color: var(--lime); background: var(--leaf); }
-.btn-lang .flag      { font-size: 2rem; }
-.btn-lang .lang-name { font-size: .85rem; font-weight: 700; color: var(--sand); }
+.btn-lang:hover,.btn-lang:active { border-color:var(--lime); background:var(--leaf); }
+.btn-lang .flag      { font-size:2rem; }
+.btn-lang .lang-name { font-size:.85rem; font-weight:700; }
 
-/* ═══════ SETUP SCREEN ═══════ */
-#setup-screen {
-  display: none; min-height: 100vh; flex-direction: column;
-  align-items: center; justify-content: center; padding: 2rem 1.5rem; gap: 2rem;
-}
-.logo { text-align: center; }
-.logo-icon { font-size: 4rem; display: block; margin-bottom: .5rem; filter: drop-shadow(0 4px 12px rgba(139,195,74,.4)); }
-.logo h1   { font-size: 1.8rem; font-weight: 700; letter-spacing: .05em; color: var(--lime); text-transform: uppercase; }
-.logo p    { font-size: .9rem; color: rgba(245,240,232,.6); margin-top: .3rem; }
+/* ════ SETUP SCREEN ════ */
+#setup-screen { display:none; min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:2rem 1.5rem; gap:2rem; }
+.logo { text-align:center; }
+.logo-icon { font-size:4rem; display:block; margin-bottom:.5rem; filter:drop-shadow(0 4px 12px rgba(139,195,74,.4)); }
+.logo h1   { font-size:1.8rem; font-weight:700; letter-spacing:.05em; color:var(--lime); text-transform:uppercase; }
+.logo p    { font-size:.9rem; color:rgba(245,240,232,.6); margin-top:.3rem; }
 .setup-card {
-  background: var(--moss); border: 1px solid rgba(139,195,74,.2);
-  border-radius: 16px; padding: 2rem 1.5rem; width: 100%; max-width: 380px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  background:var(--moss); border:1px solid rgba(139,195,74,.2);
+  border-radius:16px; padding:2rem 1.5rem; width:100%; max-width:380px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
 }
-.setup-card label { display: block; font-size: .8rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--lime); margin-bottom: .6rem; }
-.setup-card input {
-  width: 100%; background: var(--forest); border: 1.5px solid rgba(139,195,74,.3);
-  border-radius: 10px; padding: .9rem 1rem; color: var(--sand); font-size: 1.1rem;
-  font-weight: 600; outline: none; transition: border-color .2s; -webkit-appearance: none;
+.field-label { display:block; font-size:.8rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--lime); margin-bottom:.6rem; }
+.text-input {
+  width:100%; background:var(--forest); border:1.5px solid rgba(139,195,74,.3);
+  border-radius:10px; padding:.9rem 1rem; color:var(--sand); font-size:1.1rem;
+  font-weight:600; outline:none; transition:border-color .2s; -webkit-appearance:none;
 }
-.setup-card input:focus { border-color: var(--lime); box-shadow: 0 0 0 3px rgba(139,195,74,.15); }
-.setup-card input::placeholder { color: rgba(245,240,232,.3); font-weight: 400; }
-.session-info {
-  background: rgba(139,195,74,.08); border: 1px solid rgba(139,195,74,.2);
-  border-radius: 8px; padding: .7rem 1rem; font-size: .8rem;
-  color: rgba(245,240,232,.5); margin-top: 1rem; text-align: center;
+.text-input:focus { border-color:var(--lime); box-shadow:0 0 0 3px rgba(139,195,74,.15); }
+.text-input::placeholder { color:rgba(245,240,232,.3); font-weight:400; }
+.session-info { background:rgba(139,195,74,.08); border:1px solid rgba(139,195,74,.2); border-radius:8px; padding:.7rem 1rem; font-size:.8rem; color:rgba(245,240,232,.5); margin-top:1rem; text-align:center; }
+.session-info span { color:var(--lime); font-weight:600; }
+.btn-primary {
+  width:100%; background:linear-gradient(135deg,var(--leaf),var(--lime));
+  border:none; border-radius:12px; padding:1rem; color:var(--forest);
+  font-size:1.05rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+  cursor:pointer; margin-top:1.2rem; transition:transform .15s, box-shadow .15s;
+  box-shadow:0 4px 16px rgba(139,195,74,.3); -webkit-tap-highlight-color:transparent;
 }
-.session-info span { color: var(--lime); font-weight: 600; }
-.btn-start {
-  width: 100%; background: linear-gradient(135deg, var(--leaf), var(--lime));
-  border: none; border-radius: 12px; padding: 1rem; color: var(--forest);
-  font-size: 1.1rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
-  cursor: pointer; margin-top: 1.5rem; transition: transform .15s, box-shadow .15s;
-  box-shadow: 0 4px 16px rgba(139,195,74,.3); -webkit-tap-highlight-color: transparent;
-}
-.btn-start:active { transform: scale(.97); }
-.btn-start:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.btn-primary:active { transform:scale(.97); }
+.btn-primary:disabled { opacity:.4; cursor:not-allowed; transform:none; }
 
-/* ═══════ GAME SCREEN ═══════ */
-#game-screen { display: none; flex-direction: column; height: 100vh; height: 100dvh; }
+/* ── BANNER "session en cours" ── */
+#resume-banner {
+  display:none;
+  background:rgba(139,195,74,.08); border:1px solid rgba(139,195,74,.25);
+  border-radius:12px; padding:1rem 1.2rem; width:100%; max-width:380px;
+  position:relative;
+}
+.resume-title { font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--lime); margin-bottom:.5rem; }
+.resume-info  { font-size:.88rem; color:rgba(245,240,232,.75); line-height:1.6; }
+.resume-info strong { color:var(--sand); }
+.btn-resume {
+  width:100%; margin-top:.9rem; padding:.8rem;
+  background:linear-gradient(135deg,var(--leaf),var(--lime));
+  border:none; border-radius:10px; color:var(--forest);
+  font-size:.95rem; font-weight:800; cursor:pointer; letter-spacing:.04em;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-resume:active { opacity:.85; }
+.btn-other {
+  width:100%; margin-top:.5rem; padding:.65rem;
+  background:none; border:1px solid rgba(245,240,232,.15);
+  border-radius:10px; color:rgba(245,240,232,.5);
+  font-size:.82rem; cursor:pointer; transition:border-color .15s, color .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-other:hover { border-color:rgba(245,240,232,.35); color:rgba(245,240,232,.8); }
 
+/* ════ GAME SCREEN ════ */
+#game-screen { display:none; flex-direction:column; height:100vh; height:100dvh; }
 .game-header {
-  background: var(--moss); border-bottom: 1px solid rgba(139,195,74,.15);
-  padding: .75rem 1rem .75rem 1rem;
-  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
-  /* laisser de la place pour le FAB à droite */
-  padding-right: 60px;
+  background:var(--moss); border-bottom:1px solid rgba(139,195,74,.15);
+  padding:.75rem 1rem; padding-right:60px;
+  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
 }
-.team-badge   { display: flex; align-items: center; gap: .6rem; }
-.team-icon    { width: 36px; height: 36px; background: linear-gradient(135deg,var(--leaf),var(--lime)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
-.team-name-display    { font-weight: 700; font-size: 1rem; }
-.team-session-display { font-size: .7rem; color: rgba(245,240,232,.4); }
-.status-pill {
-  display: flex; align-items: center; gap: .4rem;
-  background: rgba(139,195,74,.1); border: 1px solid rgba(139,195,74,.2);
-  border-radius: 20px; padding: .3rem .8rem; font-size: .75rem; color: var(--lime); font-weight: 600;
-}
-.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); animation: pulse 2s infinite; }
+.team-badge { display:flex; align-items:center; gap:.6rem; }
+.team-icon  { width:36px; height:36px; background:linear-gradient(135deg,var(--leaf),var(--lime)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+.team-name-display    { font-weight:700; font-size:1rem; }
+.team-session-display { font-size:.7rem; color:rgba(245,240,232,.4); }
+.status-pill { display:flex; align-items:center; gap:.4rem; background:rgba(139,195,74,.1); border:1px solid rgba(139,195,74,.2); border-radius:20px; padding:.3rem .8rem; font-size:.75rem; color:var(--lime); font-weight:600; }
+.status-dot  { width:7px; height:7px; border-radius:50%; background:var(--lime); animation:pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-.gps-bar {
-  background: rgba(139,195,74,.06); border-top: 1px solid rgba(139,195,74,.1);
-  padding: .35rem 1rem; display: flex; align-items: center; gap: .5rem;
-  font-size: .72rem; color: rgba(245,240,232,.4); flex-shrink: 0;
-}
-.gps-ok  { color: var(--lime); }
-.gps-err { color: var(--danger); }
+.gps-bar { background:rgba(139,195,74,.06); border-top:1px solid rgba(139,195,74,.1); padding:.35rem 1rem; display:flex; align-items:center; gap:.5rem; font-size:.72rem; color:rgba(245,240,232,.4); flex-shrink:0; }
+.gps-ok  { color:var(--lime); }
+.gps-err { color:var(--danger); }
 
 /* ── MESSAGES ── */
-.messages-area {
-  flex: 1; overflow-y: auto; padding: 1rem 1rem .5rem;
-  display: flex; flex-direction: column; gap: .7rem;
-  -webkit-overflow-scrolling: touch;
-}
-
-.msg-wrap-out { display: flex; justify-content: flex-end; }
-.msg-wrap-in  { display: flex; justify-content: flex-start; }
-
-.msg-bubble {
-  max-width: 80%;
-  padding: .65rem .9rem;
-  border-radius: 16px;
-  font-size: .95rem;
-  line-height: 1.45;
-  word-break: break-word;
-  position: relative;
-}
-
-/* Messages envoyés (équipe → maître) : vert, droite */
-.msg-bubble.sent {
-  background: var(--bubble-out-bg);
-  border: 1px solid var(--bubble-out-bdr);
-  color: var(--bubble-out-text);
-  border-bottom-right-radius: 4px;
-}
-
-/* Messages reçus (maître → équipe) : ambre/doré, gauche */
-.msg-bubble.received {
-  background: var(--bubble-in-bg);
-  border: 1px solid var(--bubble-in-bdr);
-  color: var(--bubble-in-text);
-  border-bottom-left-radius: 4px;
-}
-
-.msg-author {
-  font-size: .68rem; font-weight: 700; letter-spacing: .08em;
-  text-transform: uppercase; color: var(--amber); margin-bottom: .3rem;
-}
-
-.msg-time {
-  font-size: .62rem; margin-top: .3rem;
-  display: block;
-}
-.msg-bubble.sent     .msg-time { color: rgba(232,245,208,.4); text-align: right; }
-.msg-bubble.received .msg-time { color: rgba(245,232,208,.35); text-align: left; }
-
-/* ── EMPTY STATE ── */
-.empty-chat {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  text-align: center; color: rgba(245,240,232,.2); gap: .8rem; padding: 2rem;
-}
-.empty-chat-icon { font-size: 3rem; }
-.empty-chat p    { font-size: .9rem; line-height: 1.6; }
+.messages-area { flex:1; overflow-y:auto; padding:1rem 1rem .5rem; display:flex; flex-direction:column; gap:.7rem; -webkit-overflow-scrolling:touch; }
+.msg-wrap-out { display:flex; justify-content:flex-end; }
+.msg-wrap-in  { display:flex; justify-content:flex-start; }
+.msg-bubble   { max-width:80%; padding:.65rem .9rem; border-radius:16px; font-size:.95rem; line-height:1.45; word-break:break-word; }
+.msg-bubble.sent     { background:var(--bubble-out-bg); border:1px solid var(--bubble-out-bdr); color:var(--bubble-out-text); border-bottom-right-radius:4px; }
+.msg-bubble.received { background:var(--bubble-in-bg);  border:1px solid var(--bubble-in-bdr);  color:var(--bubble-in-text);  border-bottom-left-radius:4px; }
+.msg-author { font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--amber); margin-bottom:.3rem; }
+.msg-time   { font-size:.62rem; display:block; margin-top:.3rem; }
+.msg-bubble.sent     .msg-time { color:rgba(200,240,160,.4); text-align:right; }
+.msg-bubble.received .msg-time { color:rgba(245,220,170,.35); }
+.empty-chat { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:rgba(245,240,232,.2); gap:.8rem; padding:2rem; }
+.empty-chat-icon { font-size:3rem; }
+.empty-chat p { font-size:.9rem; line-height:1.6; }
 
 /* ── INPUT ── */
-.input-area {
-  background: var(--moss); border-top: 1px solid rgba(139,195,74,.15);
-  padding: .8rem 1rem; padding-bottom: calc(.8rem + env(safe-area-inset-bottom));
-  display: flex; gap: .7rem; align-items: flex-end; flex-shrink: 0;
-}
-.msg-input {
-  flex: 1; background: var(--forest); border: 1.5px solid rgba(139,195,74,.25);
-  border-radius: 20px; padding: .7rem 1rem; color: var(--sand); font-size: .95rem;
-  outline: none; resize: none; max-height: 120px; overflow-y: auto;
-  line-height: 1.4; font-family: inherit; transition: border-color .2s; -webkit-appearance: none;
-}
-.msg-input:focus { border-color: var(--lime); }
-.msg-input::placeholder { color: rgba(245,240,232,.3); }
-.btn-send {
-  width: 44px; height: 44px;
-  background: linear-gradient(135deg, var(--leaf), var(--lime));
-  border: none; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0;
-  transition: transform .15s, opacity .15s;
-  -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 2px 8px rgba(139,195,74,.3);
-}
-.btn-send:active  { transform: scale(.9); }
-.btn-send:disabled { opacity: .3; }
-.btn-send svg { width: 20px; height: 20px; fill: var(--forest); }
+.input-area { background:var(--moss); border-top:1px solid rgba(139,195,74,.15); padding:.8rem 1rem; padding-bottom:calc(.8rem + env(safe-area-inset-bottom)); display:flex; gap:.7rem; align-items:flex-end; flex-shrink:0; }
+.msg-input  { flex:1; background:var(--forest); border:1.5px solid rgba(139,195,74,.25); border-radius:20px; padding:.7rem 1rem; color:var(--sand); font-size:.95rem; outline:none; resize:none; max-height:120px; overflow-y:auto; line-height:1.4; font-family:inherit; transition:border-color .2s; -webkit-appearance:none; }
+.msg-input:focus { border-color:var(--lime); }
+.msg-input::placeholder { color:rgba(245,240,232,.3); }
+.btn-send { width:44px; height:44px; background:linear-gradient(135deg,var(--leaf),var(--lime)); border:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:transform .15s, opacity .15s; -webkit-tap-highlight-color:transparent; box-shadow:0 2px 8px rgba(139,195,74,.3); }
+.btn-send:active { transform:scale(.9); }
+.btn-send:disabled { opacity:.3; }
+.btn-send svg { width:20px; height:20px; fill:var(--forest); }
 
-/* ═══════ CLOSED SCREEN ═══════ */
-#closed-screen {
-  display: none; min-height: 100vh; flex-direction: column;
-  align-items: center; justify-content: center; padding: 2rem; text-align: center; gap: 1.5rem;
-}
-.closed-icon  { font-size: 4rem; }
-.closed-title { font-size: 1.5rem; font-weight: 700; color: var(--amber); }
-.closed-text  { color: rgba(245,240,232,.6); line-height: 1.6; }
+/* ════ CLOSED SCREEN ════ */
+#closed-screen { display:none; min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:2rem; text-align:center; gap:1.5rem; }
+.closed-icon  { font-size:4rem; }
+.closed-title { font-size:1.5rem; font-weight:700; color:var(--amber); }
+.closed-text  { color:rgba(245,240,232,.6); line-height:1.6; }
 
-/* ═══════ LEGAL / FULL-SCREEN PANEL ═══════ */
-#legal-screen {
-  display: none; position: fixed; inset: 0; background: var(--forest);
-  overflow-y: auto; z-index: 7000; padding: 1.5rem;
-}
-.legal-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-.btn-back {
-  background: var(--moss); border: 1px solid rgba(139,195,74,.2);
-  border-radius: 8px; color: var(--sand); padding: .5rem .9rem;
-  font-size: .85rem; cursor: pointer; display: flex; align-items: center; gap: .4rem;
-}
-.btn-back:hover { background: var(--leaf); }
-.legal-page-title { font-size: 1.1rem; font-weight: 700; color: var(--lime); }
-.legal-body { max-width: 600px; margin: 0 auto; }
-.legal-body h2 { font-size: 1rem; font-weight: 700; color: var(--lime); margin: 1.5rem 0 .5rem; }
-.legal-body p, .legal-body li { font-size: .85rem; color: rgba(245,240,232,.7); line-height: 1.7; }
-.legal-body ul { padding-left: 1.2rem; margin-top: .4rem; }
-.legal-body a  { color: var(--lime); }
-.legal-divider { border: none; border-top: 1px solid rgba(139,195,74,.12); margin: 1rem 0; }
-
-/* ═══════ TOAST ═══════ */
-.toast {
-  position: fixed; bottom: 80px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--bark); color: var(--sand);
-  padding: .6rem 1.2rem; border-radius: 20px; font-size: .85rem;
-  opacity: 0; transition: opacity .25s, transform .25s;
-  z-index: 9999; white-space: nowrap; pointer-events: none;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* ════ TOAST ════ */
+.toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--bark); color:var(--sand); padding:.6rem 1.2rem; border-radius:20px; font-size:.85rem; opacity:0; transition:opacity .25s, transform .25s; z-index:9999; white-space:nowrap; pointer-events:none; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════
-     MENU FLOTTANT — visible sur toutes les pages
-════════════════════════════════════════ -->
+<!-- ════ FAB MENU ════ -->
 <div id="fab-menu">
-  <button class="fab-btn" id="fab-toggle" onclick="toggleFab()" aria-label="Menu">⋮</button>
+  <button class="fab-btn" onclick="toggleFab()" aria-label="Menu">⋮</button>
   <div class="fab-dropdown" id="fab-dropdown">
-
-    <div class="fab-section-label" id="fab-label-lang">Langue / Language</div>
-    <button class="fab-item" id="fab-fr" onclick="setLangFromMenu('fr')">
-      <span class="fab-icon">🇫🇷</span> Français
-    </button>
-    <button class="fab-item" id="fab-en" onclick="setLangFromMenu('en')">
-      <span class="fab-icon">🇬🇧</span> English
-    </button>
-
+    <div class="fab-section-label">Langue / Language</div>
+    <button class="fab-item" id="fab-fr" onclick="setLangFromMenu('fr')"><span class="fab-icon">🇫🇷</span> Français</button>
+    <button class="fab-item" id="fab-en" onclick="setLangFromMenu('en')"><span class="fab-icon">🇬🇧</span> English</button>
     <hr class="fab-divider">
-
-    <button class="fab-item" onclick="showLegal(); closeFab()">
-      <span class="fab-icon">📄</span>
-      <span id="fab-legal-label">Mentions légales</span>
-    </button>
-
+    <button class="fab-item" id="fab-legal-btn" onclick="goLegal()"><span class="fab-icon">📄</span><span id="fab-legal-label">Mentions légales</span></button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     ÉCRAN DE CHOIX DE LANGUE
-════════════════════════════════════════ -->
+<!-- ════ LANG SCREEN ════ -->
 <div id="lang-screen">
   <span class="lang-icon">🧭</span>
   <div>
@@ -339,63 +195,55 @@ html, body { height:100%; background:var(--forest); font-family:'Segoe UI',syste
     <div class="lang-sub">Choisissez votre langue / Choose your language</div>
   </div>
   <div class="lang-buttons">
-    <button class="btn-lang" onclick="setLang('fr')">
-      <span class="flag">🇫🇷</span>
-      <span class="lang-name">Français</span>
-    </button>
-    <button class="btn-lang" onclick="setLang('en')">
-      <span class="flag">🇬🇧</span>
-      <span class="lang-name">English</span>
-    </button>
+    <button class="btn-lang" onclick="setLang('fr')"><span class="flag">🇫🇷</span><span class="lang-name">Français</span></button>
+    <button class="btn-lang" onclick="setLang('en')"><span class="flag">🇬🇧</span><span class="lang-name">English</span></button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     ÉCRAN D'INSCRIPTION
-════════════════════════════════════════ -->
+<!-- ════ SETUP SCREEN ════ -->
 <div id="setup-screen">
   <div class="logo">
     <span class="logo-icon">🧭</span>
     <h1 id="txt-app-title">Jeu de Piste</h1>
-    <p  id="txt-app-sub">Entrez le nom de votre équipe pour commencer</p>
+    <p  id="txt-app-sub"></p>
   </div>
-  <div class="setup-card">
-    <label id="txt-team-label" for="team-input">Nom de l'équipe</label>
-    <input type="text" id="team-input" maxlength="30" autocomplete="off" autocorrect="off" spellcheck="false">
+
+  <!-- Bannière "reprendre la session" -->
+  <div id="resume-banner">
+    <div class="resume-title" id="txt-resume-title">Session en cours</div>
+    <div class="resume-info" id="resume-info"></div>
+    <button class="btn-resume" id="btn-resume" onclick="resumeSession()"></button>
+    <button class="btn-other"  id="btn-other"  onclick="clearAndSetup()"></button>
+  </div>
+
+  <!-- Formulaire normal -->
+  <div class="setup-card" id="setup-form">
+    <label class="field-label" id="txt-team-label" for="team-input">Nom de l'équipe</label>
+    <input class="text-input" type="text" id="team-input" maxlength="30" autocomplete="off" autocorrect="off" spellcheck="false">
     <div class="session-info">Session : <span id="session-label">—</span></div>
-    <button class="btn-start" id="btn-join" disabled></button>
+    <button class="btn-primary" id="btn-join" disabled></button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     ÉCRAN DE JEU
-════════════════════════════════════════ -->
+<!-- ════ GAME SCREEN ════ -->
 <div id="game-screen">
   <div class="game-header">
     <div class="team-badge">
       <div class="team-icon">🏃</div>
       <div>
-        <div class="team-name-display"    id="header-team-name">Équipe</div>
-        <div class="team-session-display" id="header-session">Session —</div>
+        <div class="team-name-display"    id="header-team-name"></div>
+        <div class="team-session-display" id="header-session"></div>
       </div>
     </div>
-    <div class="status-pill">
-      <div class="status-dot"></div>
-      <span id="txt-status-playing">En jeu</span>
-    </div>
+    <div class="status-pill"><div class="status-dot"></div><span id="txt-status-playing">En jeu</span></div>
   </div>
-
-  <div class="gps-bar">
-    <span>📍</span><span id="gps-status"></span>
-  </div>
-
+  <div class="gps-bar"><span>📍</span><span id="gps-status"></span></div>
   <div class="messages-area" id="messages-area">
     <div class="empty-chat" id="empty-chat">
       <div class="empty-chat-icon">💬</div>
       <p id="txt-empty-chat"></p>
     </div>
   </div>
-
   <div class="input-area">
     <textarea class="msg-input" id="msg-input" rows="1" maxlength="500"></textarea>
     <button class="btn-send" id="btn-send">
@@ -404,40 +252,24 @@ html, body { height:100%; background:var(--forest); font-family:'Segoe UI',syste
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     ÉCRAN FIN DE PARTIE
-════════════════════════════════════════ -->
+<!-- ════ CLOSED SCREEN ════ -->
 <div id="closed-screen">
   <div class="closed-icon">🏁</div>
   <div class="closed-title" id="txt-closed-title"></div>
   <div class="closed-text"  id="txt-closed-text"></div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     MENTIONS LÉGALES (panneau plein écran)
-════════════════════════════════════════ -->
-<div id="legal-screen">
-  <div class="legal-header">
-    <button class="btn-back" onclick="hideLegal()">← <span id="txt-back">Retour</span></button>
-    <div class="legal-page-title" id="legal-title-text">Mentions légales</div>
-  </div>
-  <div class="legal-body" id="legal-body"></div>
-</div>
-
 <div class="toast" id="toast"></div>
 
-<!-- ═══════════════════════════════════════
-     SCRIPT
-════════════════════════════════════════ -->
 <script>
-// ──────────────────────────────────────
-// CONFIG FIREBASE
-// ──────────────────────────────────────
+// ════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════
 const FIREBASE_URL = 'https://yggdraskills-tt1906-default-rtdb.europe-west1.firebasedatabase.app';
 
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 // TRADUCTIONS
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 const I18N = {
   fr: {
     appTitle:        'Jeu de Piste',
@@ -447,19 +279,20 @@ const I18N = {
     joinBtn:         'Rejoindre la partie →',
     statusPlaying:   'En jeu',
     gpsAcquiring:    'Acquisition GPS…',
-    gpsSent:         n  => `Position envoyée (±${n}m)`,
-    gpsError:        e  => `GPS : ${e}`,
+    gpsSent:         n => `Position envoyée (±${n}m)`,
+    gpsError:        e => `GPS : ${e}`,
     gpsUnavail:      'GPS non disponible',
     emptyChat:       'Pas encore de messages.\nÉcrivez au maître du jeu !',
     msgPlaceholder:  'Message au maître du jeu…',
     masterLabel:     '🧭 Maître du jeu',
     closedTitle:     'La partie est terminée !',
     closedText:      'Merci d\'avoir participé.\nLe maître du jeu a clôturé la session.',
-    sendError:       'Erreur d\'envoi – vérifiez votre connexion',
-    back:            'Retour',
-    legalTitle:      'Mentions légales',
-    fabLegal:        'Mentions légales',
-    legal:           legalFR,
+    sendError:       'Erreur d\'envoi — vérifiez votre connexion',
+    legalLabel:      'Mentions légales',
+    resumeTitle:     'Session en cours',
+    resumeInfo:      (team, sid) => `Équipe <strong>${team}</strong> — Session <strong>${sid}</strong>`,
+    resumeBtn:       'Reprendre la partie →',
+    otherBtn:        'Rejoindre une autre partie',
   },
   en: {
     appTitle:        'Treasure Hunt',
@@ -469,398 +302,340 @@ const I18N = {
     joinBtn:         'Join the game →',
     statusPlaying:   'Playing',
     gpsAcquiring:    'Acquiring GPS…',
-    gpsSent:         n  => `Location sent (±${n}m)`,
-    gpsError:        e  => `GPS: ${e}`,
+    gpsSent:         n => `Location sent (±${n}m)`,
+    gpsError:        e => `GPS: ${e}`,
     gpsUnavail:      'GPS not available',
     emptyChat:       'No messages yet.\nWrite to the game master!',
     msgPlaceholder:  'Message to the game master…',
     masterLabel:     '🧭 Game Master',
     closedTitle:     'Game over!',
     closedText:      'Thank you for playing.\nThe game master has ended the session.',
-    sendError:       'Send error – check your connection',
-    back:            'Back',
-    legalTitle:      'Legal notice',
-    fabLegal:        'Legal notice',
-    legal:           legalEN,
+    sendError:       'Send error — check your connection',
+    legalLabel:      'Legal notice',
+    resumeTitle:     'Session in progress',
+    resumeInfo:      (team, sid) => `Team <strong>${team}</strong> — Session <strong>${sid}</strong>`,
+    resumeBtn:       'Resume the game →',
+    otherBtn:        'Join another game',
   }
 };
 
-// ── Contenus mentions légales ──
-function legalFR() { return `
-<h2>1. Éditeur de l'application</h2>
-<p>Cette application web est mise à disposition dans le cadre d'une activité de jeu de piste.
-Elle est exploitée par l'organisateur de l'événement. Pour toute question, contactez l'organisateur directement.</p>
-<hr class="legal-divider">
-<h2>2. Données personnelles collectées</h2>
-<p>Dans le cadre du jeu de piste, l'application collecte les données suivantes :</p>
-<ul>
-  <li><strong>Nom d'équipe</strong> : saisi librement par le joueur lors de l'inscription.</li>
-  <li><strong>Position géographique (GPS)</strong> : transmise en temps réel pendant la durée du jeu, visible uniquement par le maître du jeu.</li>
-  <li><strong>Messages de tchat</strong> : échangés entre l'équipe et le maître du jeu.</li>
-</ul>
-<hr class="legal-divider">
-<h2>3. Finalité du traitement</h2>
-<p>Les données sont utilisées exclusivement pour :</p>
-<ul>
-  <li>Permettre au maître du jeu de suivre la progression des équipes sur une carte.</li>
-  <li>Assurer la communication entre les équipes et le maître du jeu.</li>
-</ul>
-<hr class="legal-divider">
-<h2>4. Durée de conservation</h2>
-<p>Toutes les données (position, messages, nom d'équipe) sont <strong>supprimées automatiquement</strong>
-à la clôture de la session par le maître du jeu. Aucune donnée n'est conservée au-delà de la partie.</p>
-<hr class="legal-divider">
-<h2>5. Hébergement des données</h2>
-<p>Les données sont stockées temporairement sur <strong>Firebase Realtime Database</strong> (Google LLC),
-dans des centres de données européens soumis à la réglementation RGPD.<br>
-Politique de confidentialité Google : <a href="https://policies.google.com/privacy" target="_blank">policies.google.com/privacy</a>.</p>
-<hr class="legal-divider">
-<h2>6. Vos droits</h2>
-<p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données.
-Contactez l'organisateur pour exercer ces droits. En pratique, la fermeture de la session entraîne
-la suppression immédiate de toutes vos données.</p>
-<hr class="legal-divider">
-<h2>7. Consentement</h2>
-<p>En rejoignant la session de jeu, vous consentez à la collecte de votre position GPS et de vos messages
-pour la durée du jeu.</p>`; }
-
-function legalEN() { return `
-<h2>1. Application publisher</h2>
-<p>This web application is provided as part of a treasure hunt activity.
-It is operated by the event organiser. For any questions, please contact the organiser directly.</p>
-<hr class="legal-divider">
-<h2>2. Personal data collected</h2>
-<p>As part of the treasure hunt, the application collects the following data:</p>
-<ul>
-  <li><strong>Team name</strong>: entered freely by the player at registration.</li>
-  <li><strong>Geographic location (GPS)</strong>: transmitted in real time during the game, visible only to the game master.</li>
-  <li><strong>Chat messages</strong>: exchanged between the team and the game master.</li>
-</ul>
-<hr class="legal-divider">
-<h2>3. Purpose of processing</h2>
-<p>Data is used exclusively to:</p>
-<ul>
-  <li>Allow the game master to track teams' progress on a map.</li>
-  <li>Enable communication between teams and the game master.</li>
-</ul>
-<hr class="legal-divider">
-<h2>4. Data retention</h2>
-<p>All data (location, messages, team name) is <strong>automatically deleted</strong>
-when the game master closes the session. No data is retained beyond the game.</p>
-<hr class="legal-divider">
-<h2>5. Data hosting</h2>
-<p>Data is temporarily stored on <strong>Firebase Realtime Database</strong> (Google LLC),
-in European data centres subject to GDPR regulations.<br>
-Google Privacy Policy: <a href="https://policies.google.com/privacy" target="_blank">policies.google.com/privacy</a>.</p>
-<hr class="legal-divider">
-<h2>6. Your rights</h2>
-<p>Under the GDPR, you have the right to access, rectify and delete your data.
-Contact the event organiser to exercise these rights. In practice, closing the session
-results in the immediate deletion of all your data.</p>
-<hr class="legal-divider">
-<h2>7. Consent</h2>
-<p>By joining the game session, you consent to the collection of your GPS location
-and messages for the duration of the game.</p>`; }
-
-// ──────────────────────────────────────
-// ÉTAT GLOBAL
-// ──────────────────────────────────────
-const params    = new URLSearchParams(window.location.search);
-const SESSION_ID = params.get('s') || 'demo';
+// ════════════════════════════════════════
+// ÉTAT
+// ════════════════════════════════════════
+const urlParams   = new URLSearchParams(window.location.search);
+const URL_SESSION = urlParams.get('s') || 'demo';
 
 let lang       = localStorage.getItem('jdp_lang') || null;
 let T          = null;
 let teamName   = '';
+let sessionId  = URL_SESSION;
 let geoWatchId = null;
 let lastMsgIds = new Set();
+let polling    = null;
 
-// ── Éléments ──
-const langScreen   = document.getElementById('lang-screen');
-const setupScreen  = document.getElementById('setup-screen');
-const gameScreen   = document.getElementById('game-screen');
-const closedScreen = document.getElementById('closed-screen');
-const legalScreen  = document.getElementById('legal-screen');
-const teamInput    = document.getElementById('team-input');
-const btnJoin      = document.getElementById('btn-join');
-const btnSend      = document.getElementById('btn-send');
-const msgInput     = document.getElementById('msg-input');
-const messagesArea = document.getElementById('messages-area');
-const emptyChat    = document.getElementById('empty-chat');
-const gpsStatus    = document.getElementById('gps-status');
-
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 // FAB MENU
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 document.addEventListener('click', e => {
-  const fab = document.getElementById('fab-menu');
-  if (!fab.contains(e.target)) closeFab();
+  if (!document.getElementById('fab-menu').contains(e.target)) closeFab();
 });
+function toggleFab() { document.getElementById('fab-dropdown').classList.toggle('open'); }
+function closeFab()  { document.getElementById('fab-dropdown').classList.remove('open'); }
 
-function toggleFab() {
-  document.getElementById('fab-dropdown').classList.toggle('open');
-}
-function closeFab() {
-  document.getElementById('fab-dropdown').classList.remove('open');
-}
-
-function updateFabActiveLang() {
+function updateFabLang() {
   document.getElementById('fab-fr').classList.toggle('active', lang === 'fr');
   document.getElementById('fab-en').classList.toggle('active', lang === 'en');
 }
 
 function setLangFromMenu(l) {
   closeFab();
-  // Si on est sur l'écran de langue ou de setup, juste changer la langue
+  const wasInGame = document.getElementById('game-screen').style.display === 'flex';
   setLang(l);
-  // Si on est en jeu, rester en jeu (juste mettre à jour les textes)
+  // Si on est en jeu, ne pas quitter l'écran
+  if (wasInGame) {
+    document.getElementById('lang-screen').style.display  = 'none';
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display  = 'flex';
+  }
 }
 
-// ──────────────────────────────────────
+function goLegal() {
+  closeFab();
+  // Ouvrir la page légale dans le même onglet (avec paramètre de session pour le retour)
+  window.location.href = `legal.html?s=${encodeURIComponent(URL_SESSION)}&lang=${lang||'fr'}`;
+}
+
+// ════════════════════════════════════════
 // LANGUE
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 function setLang(l) {
   lang = l;
   localStorage.setItem('jdp_lang', l);
   T = I18N[l];
   applyTranslations();
-  updateFabActiveLang();
-  // Aller au setup seulement si pas encore en jeu
-  if (gameScreen.style.display !== 'flex' && closedScreen.style.display !== 'flex') {
-    showSetup();
-  }
+  updateFabLang();
+  // Afficher setup si on était sur l'écran de langue
+  if (document.getElementById('lang-screen').style.display !== 'none') showSetup();
 }
 
 function applyTranslations() {
+  if (!T) return;
   document.documentElement.lang = lang;
-  document.title = T.appTitle;
-
-  // Setup
-  document.getElementById('txt-app-title').textContent  = T.appTitle;
-  document.getElementById('txt-app-sub').textContent    = T.appSub;
-  document.getElementById('txt-team-label').textContent = T.teamLabel;
-  teamInput.placeholder = T.teamPlaceholder;
-  btnJoin.textContent   = T.joinBtn;
-  document.getElementById('session-label').textContent  = SESSION_ID;
-
-  // Game
+  document.title                  = T.appTitle;
+  document.getElementById('txt-app-title').textContent   = T.appTitle;
+  document.getElementById('txt-app-sub').textContent     = T.appSub;
+  document.getElementById('txt-team-label').textContent  = T.teamLabel;
+  document.getElementById('team-input').placeholder      = T.teamPlaceholder;
+  document.getElementById('btn-join').textContent        = T.joinBtn;
+  document.getElementById('session-label').textContent   = URL_SESSION;
   document.getElementById('txt-status-playing').textContent = T.statusPlaying;
-  msgInput.placeholder = T.msgPlaceholder;
-  if (gpsStatus.textContent === '' || gpsStatus.dataset.state !== 'ok')
-    gpsStatus.textContent = T.gpsAcquiring;
-
-  // Empty chat
-  document.getElementById('txt-empty-chat').innerHTML = T.emptyChat.replace('\n', '<br>');
-
-  // Closed
+  document.getElementById('msg-input').placeholder       = T.msgPlaceholder;
+  document.getElementById('txt-empty-chat').innerHTML    = T.emptyChat.replace('\n','<br>');
   document.getElementById('txt-closed-title').textContent = T.closedTitle;
-  document.getElementById('txt-closed-text').innerHTML    = T.closedText.replace('\n', '<br>');
-
-  // Legal panel
-  document.getElementById('txt-back').textContent       = T.back;
-  document.getElementById('legal-title-text').textContent = T.legalTitle;
-  document.getElementById('fab-legal-label').textContent  = T.fabLegal;
+  document.getElementById('txt-closed-text').innerHTML   = T.closedText.replace('\n','<br>');
+  document.getElementById('fab-legal-label').textContent = T.legalLabel;
+  document.getElementById('txt-resume-title').textContent = T.resumeTitle;
+  document.getElementById('btn-resume').textContent      = T.resumeBtn;
+  document.getElementById('btn-other').textContent       = T.otherBtn;
+  // gps status label si pas encore en jeu
+  const gs = document.getElementById('gps-status');
+  if (!gs.dataset.state) gs.textContent = T.gpsAcquiring;
 }
 
+// ════════════════════════════════════════
+// MÉMOIRE DE SESSION (localStorage)
+// ════════════════════════════════════════
+function saveSession(team, sid) {
+  localStorage.setItem('jdp_team', team);
+  localStorage.setItem('jdp_session', sid);
+}
+function loadSavedSession() {
+  return {
+    team: localStorage.getItem('jdp_team'),
+    sid:  localStorage.getItem('jdp_session'),
+  };
+}
+function clearSavedSession() {
+  localStorage.removeItem('jdp_team');
+  localStorage.removeItem('jdp_session');
+}
+
+// ════════════════════════════════════════
+// NAVIGATION ÉCRANS
+// ════════════════════════════════════════
 function showSetup() {
-  langScreen.style.display  = 'none';
-  setupScreen.style.display = 'flex';
+  document.getElementById('lang-screen').style.display   = 'none';
+  document.getElementById('setup-screen').style.display  = 'flex';
+  document.getElementById('game-screen').style.display   = 'none';
+  document.getElementById('closed-screen').style.display = 'none';
+
+  const saved = loadSavedSession();
+  // Montrer la bannière seulement si la session sauvegardée correspond à l'URL actuelle
+  const hasSaved = saved.team && saved.sid && saved.sid === URL_SESSION;
+  document.getElementById('resume-banner').style.display = hasSaved ? 'block' : 'none';
+  document.getElementById('setup-form').style.display    = hasSaved ? 'none'  : 'block';
+
+  if (hasSaved && T) {
+    document.getElementById('resume-info').innerHTML = T.resumeInfo(saved.team, saved.sid);
+  }
 }
 
-// ──────────────────────────────────────
-// DÉMARRAGE
-// ──────────────────────────────────────
-if (lang) {
-  T = I18N[lang];
-  applyTranslations();
-  updateFabActiveLang();
-  showSetup();
-} else {
-  // Afficher l'écran de choix de langue
-  langScreen.style.display = 'flex';
+function clearAndSetup() {
+  clearSavedSession();
+  document.getElementById('resume-banner').style.display = 'none';
+  document.getElementById('setup-form').style.display    = 'block';
 }
 
-// ──────────────────────────────────────
-// SETUP
-// ──────────────────────────────────────
-teamInput.addEventListener('input', () => { btnJoin.disabled = teamInput.value.trim().length < 2; });
-teamInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); if (!btnJoin.disabled) joinGame(); } });
-btnJoin.addEventListener('click', joinGame);
+// ════════════════════════════════════════
+// REJOINDRE / REPRENDRE
+// ════════════════════════════════════════
+async function resumeSession() {
+  const saved = loadSavedSession();
+  if (!saved.team) return;
+  await startGame(saved.team, saved.sid);
+}
 
 async function joinGame() {
-  const name = teamInput.value.trim();
+  const name = document.getElementById('team-input').value.trim();
   if (!name) return;
+  await startGame(name, URL_SESSION);
+}
+
+async function startGame(name, sid) {
+  // Vérifier si la session est fermée
   try {
-    const open = await fbGet(`sessions/${SESSION_ID}/open`);
-    if (open === false) { showClosed(); return; }
-  } catch(e) {}
+    const open = await fbGet(`sessions/${sid}/open`);
+    if (open === false) { clearSavedSession(); showClosed(); return; }
+  } catch(e) { /* session pas encore créée = ok */ }
 
-  teamName = name;
-  document.getElementById('header-team-name').textContent   = name;
-  document.getElementById('header-session').textContent      = `Session ${SESSION_ID}`;
-  await fbSet(`sessions/${SESSION_ID}/teams/${encodeTeam(teamName)}/name`, teamName);
-  await fbSet(`sessions/${SESSION_ID}/teams/${encodeTeam(teamName)}/joined`, Date.now());
+  teamName  = name;
+  sessionId = sid;
+  saveSession(teamName, sessionId);
 
-  setupScreen.style.display = 'none';
-  gameScreen.style.display  = 'flex';
-  gpsStatus.textContent = T.gpsAcquiring;
+  document.getElementById('header-team-name').textContent   = teamName;
+  document.getElementById('header-session').textContent     = `Session ${sessionId}`;
+
+  await fbSet(`sessions/${sessionId}/teams/${encodeTeam(teamName)}/name`,   teamName);
+  await fbSet(`sessions/${sessionId}/teams/${encodeTeam(teamName)}/joined`, Date.now());
+
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display  = 'flex';
+
+  document.getElementById('gps-status').textContent = T.gpsAcquiring;
   startGPS();
   startPolling();
 }
 
-// ──────────────────────────────────────
+// Activation bouton join
+document.getElementById('team-input').addEventListener('input', function() {
+  document.getElementById('btn-join').disabled = this.value.trim().length < 2;
+});
+document.getElementById('team-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); if (!document.getElementById('btn-join').disabled) joinGame(); }
+});
+document.getElementById('btn-join').addEventListener('click', joinGame);
+
+// ════════════════════════════════════════
 // GPS
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 function startGPS() {
-  if (!navigator.geolocation) {
-    gpsStatus.textContent = T.gpsUnavail;
-    gpsStatus.className   = 'gps-err';
-    return;
-  }
+  const gs = document.getElementById('gps-status');
+  if (!navigator.geolocation) { gs.textContent = T.gpsUnavail; gs.className = 'gps-err'; return; }
   geoWatchId = navigator.geolocation.watchPosition(
     pos => {
       const { latitude:lat, longitude:lng, accuracy:acc } = pos.coords;
-      gpsStatus.textContent   = T.gpsSent(Math.round(acc));
-      gpsStatus.className     = 'gps-ok';
-      gpsStatus.dataset.state = 'ok';
-      fbSet(`sessions/${SESSION_ID}/teams/${encodeTeam(teamName)}/position`,
-            { lat, lng, acc: Math.round(acc), t: Date.now() });
+      gs.textContent   = T.gpsSent(Math.round(acc));
+      gs.className     = 'gps-ok';
+      gs.dataset.state = 'ok';
+      fbSet(`sessions/${sessionId}/teams/${encodeTeam(teamName)}/position`,
+            { lat, lng, acc:Math.round(acc), t:Date.now() });
     },
-    err => {
-      gpsStatus.textContent = T.gpsError(err.message);
-      gpsStatus.className   = 'gps-err';
-    },
+    err => { gs.textContent = T.gpsError(err.message); gs.className = 'gps-err'; },
     { enableHighAccuracy:true, maximumAge:5000, timeout:10000 }
   );
 }
 
-// ──────────────────────────────────────
-// POLLING MESSAGES
-// ──────────────────────────────────────
+// ════════════════════════════════════════
+// POLLING
+// ════════════════════════════════════════
 function startPolling() {
+  if (polling) clearInterval(polling);
   pollMessages();
-  setInterval(pollMessages,   3000);
-  setInterval(checkSession,  10000);
+  polling = setInterval(pollMessages, 3000);
+  setInterval(checkSession, 10000);
 }
 
 async function pollMessages() {
   try {
-    const data = await fbGet(`sessions/${SESSION_ID}/messages`);
+    const data = await fbGet(`sessions/${sessionId}/messages`);
     if (!data) return;
     const myKey = encodeTeam(teamName);
     const msgs = Object.entries(data)
-      .map(([id, m]) => ({ id, ...m }))
-      .sort((a, b) => a.t - b.t)
+      .map(([id,m]) => ({ id,...m }))
+      .sort((a,b) => a.t - b.t)
       .filter(m => m.from === 'master'
-        ? (m.to === myKey || !m.to)
+        ? (m.to === myKey || m.to === null || m.to === undefined)
         : m.team === myKey);
-
     let hasNew = false;
     msgs.forEach(m => { if (!lastMsgIds.has(m.id)) hasNew = true; });
-    if (!hasNew) return;
-    renderMessages(msgs);
+    if (hasNew) renderMessages(msgs);
   } catch(e) {}
 }
 
 async function checkSession() {
-  try { const o = await fbGet(`sessions/${SESSION_ID}/open`); if (o === false) showClosed(); } catch(e) {}
+  try {
+    const open = await fbGet(`sessions/${sessionId}/open`);
+    if (open === false) { clearSavedSession(); showClosed(); }
+  } catch(e) {}
 }
 
-// ──────────────────────────────────────
-// RENDU DES MESSAGES
-// ──────────────────────────────────────
+// ════════════════════════════════════════
+// RENDU MESSAGES
+// ════════════════════════════════════════
 function renderMessages(msgs) {
-  emptyChat.style.display = 'none';
-
+  document.getElementById('empty-chat').style.display = 'none';
+  const area = document.getElementById('messages-area');
   msgs.forEach(m => {
     if (lastMsgIds.has(m.id)) return;
     lastMsgIds.add(m.id);
-
     const isMaster = m.from === 'master';
-
-    // Wrapper positionné à gauche ou à droite
-    const wrap = document.createElement('div');
+    const wrap   = document.createElement('div');
     wrap.className = isMaster ? 'msg-wrap-in' : 'msg-wrap-out';
-
     const bubble = document.createElement('div');
     bubble.className = `msg-bubble ${isMaster ? 'received' : 'sent'}`;
     bubble.dataset.id = m.id;
-
-    if (isMaster) {
-      bubble.innerHTML =
-        `<div class="msg-author">${T.masterLabel}</div>` +
-        escHtml(m.text) +
-        `<span class="msg-time">${fmtTime(m.t)}</span>`;
-    } else {
-      bubble.innerHTML =
-        escHtml(m.text) +
-        `<span class="msg-time">${fmtTime(m.t)}</span>`;
-    }
-
+    bubble.innerHTML = (isMaster ? `<div class="msg-author">${T.masterLabel}</div>` : '')
+      + escHtml(m.text)
+      + `<span class="msg-time">${fmtTime(m.t)}</span>`;
     wrap.appendChild(bubble);
-    messagesArea.appendChild(wrap);
+    area.appendChild(wrap);
   });
-
-  messagesArea.scrollTop = messagesArea.scrollHeight;
+  area.scrollTop = area.scrollHeight;
 }
 
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 // ENVOI
-// ──────────────────────────────────────
-btnSend.addEventListener('click', sendMessage);
-msgInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-msgInput.addEventListener('input', () => {
-  msgInput.style.height = 'auto';
-  msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
+// ════════════════════════════════════════
+document.getElementById('btn-send').addEventListener('click', sendMessage);
+document.getElementById('msg-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+document.getElementById('msg-input').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
 
 async function sendMessage() {
-  const text = msgInput.value.trim();
+  const input = document.getElementById('msg-input');
+  const text  = input.value.trim();
   if (!text || !teamName) return;
-  btnSend.disabled = true;
-  msgInput.value = '';
-  msgInput.style.height = 'auto';
+  document.getElementById('btn-send').disabled = true;
+  input.value = ''; input.style.height = 'auto';
   try {
-    await fbPush(`sessions/${SESSION_ID}/messages`, {
-      from: 'team', team: encodeTeam(teamName), teamName, text, t: Date.now()
-    });
+    await fbPush(`sessions/${sessionId}/messages`,
+      { from:'team', team:encodeTeam(teamName), teamName, text, t:Date.now() });
     await pollMessages();
   } catch(e) { showToast(T.sendError); }
-  finally { btnSend.disabled = false; }
+  finally { document.getElementById('btn-send').disabled = false; }
 }
 
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 // FIN DE SESSION
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 function showClosed() {
   if (geoWatchId) navigator.geolocation.clearWatch(geoWatchId);
-  gameScreen.style.display  = 'none';
-  closedScreen.style.display = 'flex';
+  if (polling) clearInterval(polling);
+  document.getElementById('game-screen').style.display   = 'none';
+  document.getElementById('closed-screen').style.display = 'flex';
 }
 
-// ──────────────────────────────────────
-// MENTIONS LÉGALES
-// ──────────────────────────────────────
-function showLegal() {
-  document.getElementById('legal-body').innerHTML = T ? T.legal() : legalFR();
-  legalScreen.style.display = 'block';
-}
-function hideLegal() { legalScreen.style.display = 'none'; }
-
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 // FIREBASE
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 const FB = p => `${FIREBASE_URL}/${p}.json`;
-async function fbGet(p)   { const r=await fetch(FB(p)); if(!r.ok) throw new Error(r.status); return r.json(); }
+async function fbGet(p)   { const r = await fetch(FB(p)); if (!r.ok) throw new Error(r.status); return r.json(); }
 async function fbSet(p,v) { await fetch(FB(p), { method:'PUT',  body:JSON.stringify(v) }); }
 async function fbPush(p,v){ await fetch(FB(p), { method:'POST', body:JSON.stringify(v) }); }
 
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 // UTILITAIRES
-// ──────────────────────────────────────
+// ════════════════════════════════════════
 function encodeTeam(n) { return n.toLowerCase().replace(/[^a-z0-9]/g,'_').replace(/_+/g,'_').slice(0,30); }
 function escHtml(t)    { if(!t) return ''; return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
 function fmtTime(ts)   { return new Date(ts).toLocaleTimeString(lang==='en'?'en-GB':'fr-FR',{hour:'2-digit',minute:'2-digit'}); }
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+if (lang) {
+  T = I18N[lang];
+  applyTranslations();
+  updateFabLang();
+  showSetup();
+} else {
+  document.getElementById('lang-screen').style.display = 'flex';
+}
 </script>
 </body>
 </html>

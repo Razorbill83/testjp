@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentions légales – Jeu de Piste</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --forest:#1a2e1a; --moss:#2d4a1e; --leaf:#4a7c2f;
+  --lime:#8bc34a; --sand:#f5f0e8; --amber:#d4832a;
+}
+html,body { min-height:100%; background:var(--forest); font-family:'Segoe UI',system-ui,sans-serif; color:var(--sand); }
+
+/* ── HEADER ── */
+.page-header {
+  background:var(--moss); border-bottom:1px solid rgba(139,195,74,.2);
+  padding:.9rem 1.2rem; display:flex; align-items:center; gap:1rem;
+  position:sticky; top:0; z-index:10;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+.btn-back {
+  background:rgba(139,195,74,.1); border:1px solid rgba(139,195,74,.25);
+  border-radius:8px; color:var(--sand); padding:.45rem .9rem;
+  font-size:.85rem; cursor:pointer; text-decoration:none;
+  display:flex; align-items:center; gap:.4rem; transition:background .15s;
+  white-space:nowrap;
+}
+.btn-back:hover { background:var(--leaf); }
+.page-title { font-size:1rem; font-weight:700; color:var(--lime); }
+
+/* ── LANG SWITCHER ── */
+.lang-switch {
+  margin-left:auto; display:flex; gap:.4rem;
+}
+.btn-lang-sm {
+  background:none; border:1px solid rgba(139,195,74,.2);
+  border-radius:6px; color:rgba(245,240,232,.5);
+  font-size:.75rem; padding:.3rem .6rem; cursor:pointer;
+  transition:background .15s, color .15s;
+}
+.btn-lang-sm.active { background:rgba(139,195,74,.15); color:var(--lime); border-color:rgba(139,195,74,.4); }
+.btn-lang-sm:hover { color:var(--sand); }
+
+/* ── CONTENT ── */
+.legal-content {
+  max-width:680px; margin:0 auto; padding:2rem 1.5rem 4rem;
+}
+.legal-content h1 {
+  font-size:1.4rem; font-weight:800; color:var(--lime);
+  margin-bottom:1.5rem; padding-bottom:.8rem;
+  border-bottom:1px solid rgba(139,195,74,.2);
+}
+.legal-content h2 {
+  font-size:.95rem; font-weight:700; color:var(--lime);
+  margin:1.8rem 0 .5rem;
+}
+.legal-content p, .legal-content li {
+  font-size:.88rem; color:rgba(245,240,232,.75); line-height:1.75;
+}
+.legal-content ul { padding-left:1.3rem; margin-top:.5rem; }
+.legal-content li { margin-bottom:.3rem; }
+.legal-content a { color:var(--amber); }
+.legal-content a:hover { color:var(--lime); }
+.legal-content strong { color:rgba(245,240,232,.95); }
+.divider {
+  border:none; border-top:1px solid rgba(139,195,74,.1);
+  margin:1.2rem 0;
+}
+
+/* ── FOOTER ── */
+.legal-footer {
+  text-align:center; padding:1.5rem;
+  font-size:.75rem; color:rgba(245,240,232,.2);
+  border-top:1px solid rgba(139,195,74,.08);
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <a class="btn-back" id="back-link" href="player.html">← <span id="txt-back">Retour</span></a>
+  <div class="page-title" id="txt-page-title">Mentions légales</div>
+  <div class="lang-switch">
+    <button class="btn-lang-sm" id="btn-fr" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button class="btn-lang-sm" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
+  </div>
+</div>
+
+<div class="legal-content">
+  <h1 id="txt-title">Mentions légales</h1>
+  <div id="legal-body"></div>
+</div>
+
+<div class="legal-footer" id="txt-footer">
+  Jeu de Piste — Application web de suivi en temps réel
+</div>
+
+<script>
+const CONTENT = {
+  fr: {
+    back:      'Retour',
+    pageTitle: 'Mentions légales',
+    title:     'Mentions légales',
+    footer:    'Jeu de Piste — Application web de suivi en temps réel',
+    body: `
+      <h2>1. Éditeur de l'application</h2>
+      <p>Cette application web est mise à disposition dans le cadre d'une activité de jeu de piste.
+         Elle est exploitée par l'organisateur de l'événement.<br>
+         Pour toute question, contactez l'organisateur directement.</p>
+      <hr class="divider">
+
+      <h2>2. Données personnelles collectées</h2>
+      <p>Dans le cadre du jeu de piste, l'application collecte les données suivantes :</p>
+      <ul>
+        <li><strong>Nom d'équipe</strong> : saisi librement par le joueur lors de l'inscription.</li>
+        <li><strong>Position géographique (GPS)</strong> : transmise en temps réel pendant la durée du jeu, visible uniquement par le maître du jeu.</li>
+        <li><strong>Messages de tchat</strong> : échangés entre l'équipe et le maître du jeu.</li>
+        <li><strong>Langue préférée</strong> : mémorisée localement sur votre appareil uniquement (non transmise).</li>
+      </ul>
+      <hr class="divider">
+
+      <h2>3. Finalité du traitement</h2>
+      <p>Les données sont utilisées exclusivement pour :</p>
+      <ul>
+        <li>Permettre au maître du jeu de suivre la progression des équipes sur une carte.</li>
+        <li>Assurer la communication entre les équipes et le maître du jeu.</li>
+        <li>Restaurer la connexion d'une équipe en cas de rechargement de la page.</li>
+      </ul>
+      <hr class="divider">
+
+      <h2>4. Durée de conservation</h2>
+      <p>Toutes les données serveur (position, messages, nom d'équipe) sont
+         <strong>supprimées automatiquement</strong> à la clôture de la session par le maître du jeu.
+         Aucune donnée serveur n'est conservée au-delà de la partie.</p>
+      <p>Les préférences locales (langue, nom d'équipe, session) sont stockées dans votre navigateur
+         (<code>localStorage</code>) et peuvent être effacées à tout moment en vidant le cache de votre navigateur
+         ou en cliquant sur « Rejoindre une autre partie ».</p>
+      <hr class="divider">
+
+      <h2>5. Hébergement des données</h2>
+      <p>Les données sont stockées temporairement sur <strong>Firebase Realtime Database</strong> (Google LLC),
+         dans des centres de données européens soumis à la réglementation RGPD.<br>
+         Politique de confidentialité Google :
+         <a href="https://policies.google.com/privacy" target="_blank">policies.google.com/privacy</a>.</p>
+      <hr class="divider">
+
+      <h2>6. Vos droits (RGPD)</h2>
+      <p>Conformément au Règlement Général sur la Protection des Données (UE) 2016/679, vous disposez d'un
+         droit d'accès, de rectification, d'effacement et de portabilité de vos données.<br>
+         Contactez l'organisateur de l'événement pour exercer ces droits.<br>
+         En pratique, la fermeture de la session entraîne la suppression immédiate de toutes vos données serveur.</p>
+      <hr class="divider">
+
+      <h2>7. Consentement</h2>
+      <p>En rejoignant la session de jeu, vous consentez à la collecte de votre position GPS et de vos messages
+         pour la durée du jeu. Ce consentement est nécessaire au bon fonctionnement de l'application.</p>
+      <hr class="divider">
+
+      <h2>8. Cookies et stockage local</h2>
+      <p>L'application n'utilise pas de cookies. Elle utilise le <strong>stockage local du navigateur</strong>
+         (<code>localStorage</code>) uniquement pour mémoriser votre préférence de langue et vos informations
+         de connexion à la session en cours. Ces données ne quittent pas votre appareil.</p>
+    `
+  },
+  en: {
+    back:      'Back',
+    pageTitle: 'Legal notice',
+    title:     'Legal Notice',
+    footer:    'Treasure Hunt — Real-time location tracking web app',
+    body: `
+      <h2>1. Application publisher</h2>
+      <p>This web application is provided as part of a treasure hunt activity.
+         It is operated by the event organiser.<br>
+         For any questions, please contact the organiser directly.</p>
+      <hr class="divider">
+
+      <h2>2. Personal data collected</h2>
+      <p>As part of the treasure hunt, the application collects the following data:</p>
+      <ul>
+        <li><strong>Team name</strong>: entered freely by the player at registration.</li>
+        <li><strong>Geographic location (GPS)</strong>: transmitted in real time during the game, visible only to the game master.</li>
+        <li><strong>Chat messages</strong>: exchanged between the team and the game master.</li>
+        <li><strong>Language preference</strong>: stored locally on your device only (not transmitted).</li>
+      </ul>
+      <hr class="divider">
+
+      <h2>3. Purpose of processing</h2>
+      <p>Data is used exclusively to:</p>
+      <ul>
+        <li>Allow the game master to track teams' progress on a map.</li>
+        <li>Enable communication between teams and the game master.</li>
+        <li>Restore a team's connection if the page is reloaded.</li>
+      </ul>
+      <hr class="divider">
+
+      <h2>4. Data retention</h2>
+      <p>All server-side data (location, messages, team name) is <strong>automatically deleted</strong>
+         when the game master closes the session. No server data is retained beyond the game.</p>
+      <p>Local preferences (language, team name, session) are stored in your browser (<code>localStorage</code>)
+         and can be deleted at any time by clearing your browser cache or clicking "Join another game".</p>
+      <hr class="divider">
+
+      <h2>5. Data hosting</h2>
+      <p>Data is temporarily stored on <strong>Firebase Realtime Database</strong> (Google LLC),
+         in European data centres subject to GDPR regulations.<br>
+         Google Privacy Policy:
+         <a href="https://policies.google.com/privacy" target="_blank">policies.google.com/privacy</a>.</p>
+      <hr class="divider">
+
+      <h2>6. Your rights (GDPR)</h2>
+      <p>Under Regulation (EU) 2016/679 (GDPR), you have the right to access, rectify, erase,
+         and port your data.<br>
+         Contact the event organiser to exercise these rights.<br>
+         In practice, closing the session results in the immediate deletion of all your server-side data.</p>
+      <hr class="divider">
+
+      <h2>7. Consent</h2>
+      <p>By joining the game session, you consent to the collection of your GPS location and messages
+         for the duration of the game. This consent is required for the application to function.</p>
+      <hr class="divider">
+
+      <h2>8. Cookies and local storage</h2>
+      <p>The application does not use cookies. It uses <strong>browser local storage</strong>
+         (<code>localStorage</code>) solely to remember your language preference and your connection
+         details for the current session. This data does not leave your device.</p>
+    `
+  }
+};
+
+// Detect lang from URL param or localStorage
+const params = new URLSearchParams(window.location.search);
+let lang = params.get('lang') || localStorage.getItem('jdp_lang') || 'fr';
+
+// Preserve the session param in back link
+const backSession = params.get('s');
+if (backSession) {
+  document.getElementById('back-link').href = `player.html?s=${encodeURIComponent(backSession)}`;
+}
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('jdp_lang', l);
+  apply();
+}
+
+function apply() {
+  const C = CONTENT[lang] || CONTENT.fr;
+  document.documentElement.lang = lang;
+  document.title = C.title + ' – Jeu de Piste';
+  document.getElementById('txt-back').textContent      = C.back;
+  document.getElementById('txt-page-title').textContent = C.pageTitle;
+  document.getElementById('txt-title').textContent      = C.title;
+  document.getElementById('legal-body').innerHTML       = C.body;
+  document.getElementById('txt-footer').textContent     = C.footer;
+  document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+}
+
+apply();
+</script>
+</body>
+</html>
